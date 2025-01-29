@@ -9,3 +9,7 @@ spring:
       ddl-auto: create # Choose: validate,update,create. create - useful in development level, creating tables on every startup
     show-sql: true # Turn on/off SQL query in console - useful in development mode
   database-platform: org.hibernate.dialect.PostgreSQLDialect
+  logging:
+    level:
+      root: DEBUG # TODO Debug logs are not displayed
+#      com.barmie.ServerManager: DEBUG
