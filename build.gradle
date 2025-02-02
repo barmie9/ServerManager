@@ -48,6 +48,13 @@ dependencies {
 
 	// Logback
 //	implementation 'ch.qos.logback:logback-classic'
+
+	// Selenium and WebDriver:
+	implementation 'org.seleniumhq.selenium:selenium-java:4.15.0'
+	implementation 'io.github.bonigarcia:webdrivermanager:5.8.0'
+
+	// HtmlUnit:
+//	implementation 'org.seleniumhq.selenium:selenium-htmlunit-driver:4.15.0'
 }
 
 tasks.named('test') {
