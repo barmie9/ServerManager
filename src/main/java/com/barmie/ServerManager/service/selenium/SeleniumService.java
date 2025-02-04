@@ -1,17 +1,17 @@
 package com.barmie.ServerManager.service.selenium;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.springframework.stereotype.Service;
-
-import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 
@@ -55,6 +55,8 @@ public class SeleniumService {
 
     public void stopSeleniumThread() {
         seleniumThread.interrupt();
+        seleniumThread.interrupt(); // TODO Sometimes problem with interrupt:
+        // TODO Failed to shutdown Driver Command Executor
     }
 
     public WebDriver getSeleniumDriver(boolean visibleInterface) {
@@ -92,7 +94,7 @@ public class SeleniumService {
 
     public void logInNoIp(WebDriver driver) {
         driver.get(NO_IP_URL);
-        // Ustawienie WebDriverWait na maksymalnie 15 sekund
+        // Set WebDriverWait max 15 sec
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         WebElement usernameInput = findById(wait, "username");
         WebElement passwordInput = findById(wait, "password");
@@ -111,12 +113,32 @@ public class SeleniumService {
     // TODO check if the account has been logged out
     public String checkNoIpDomainStatus(WebDriver driver) {
         driver.get("https://my.noip.com/dynamic-dns");
+
+        if (!isLoggedIn(driver, "user-email-container")) {
+            logInNoIp(driver);
+        }
+
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
         WebElement domainStatus = findByXpath(wait,
                 "/html/body/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div/div/div[2]/div[1]/table/tbody/tr/td[1]/div[2]/span/span/div/a");
 //        log.info(domainStatus.getText());
         return domainStatus.getText();
+    }
+
+    // The method checks whether the user is logged in based on the element id,
+    // which is displayed only to the logged in user.
+    // TODO It works, but needs more tests
+    public boolean isLoggedIn(WebDriver driver, String elementId) {
+        // Set WebDriverWait max 10 sec
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(1));
+        try {
+            WebElement element = findById(wait, elementId);
+            return true;
+        } catch (TimeoutException e) {
+            log.info("USER IS LOGGED OUT!");
+            return false;
+        }
     }
 
     // The method finds an element by id, waiting for it for max time: wait
