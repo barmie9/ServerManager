@@ -19,4 +19,17 @@ public class SystemCommandController {
         systemCommandService.powerOffSystem();
         return ResponseEntity.ok("OK");
     }
+
+    @GetMapping("reboot")
+    public ResponseEntity<String> rebootSystem() {
+        systemCommandService.rebootSystem();
+        return ResponseEntity.ok("OK");
+    }
+
+    // TODO change response (create new class)
+    @GetMapping("running-docker-containers")
+    public ResponseEntity<String> getRunningDockerContainers() {
+        String response = systemCommandService.getRunDockerContainers();
+        return ResponseEntity.ok(response);
+    }
 }
